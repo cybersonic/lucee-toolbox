@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="false">
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+    
+    <!-- Console appender for errors and warnings only -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <!-- Only output WARN and ERROR to console by default -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+    <!-- Root logger - only WARN and ERROR to console -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- Lucee Toolbox specific logging - only WARN and ERROR by default -->
+    <logger name="org.lucee.toolbox" level="WARN" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- Parser specific logging - only errors -->
+    <logger name="org.lucee.toolbox.core.parser" level="ERROR" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- BoxLang parser logging - only errors -->
+    <logger name="ortus.boxlang.compiler.parser" level="ERROR" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- ANTLR - suppress all but critical errors -->
+    <logger name="org.antlr" level="ERROR" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- Debug loggers - disabled in production -->
+    <logger name="org.lucee.toolbox.debug" level="OFF" additivity="false"/>
+</configuration>

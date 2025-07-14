@@ -1,0 +1,278 @@
+{
+  "version": "1.0.0",
+  "extends": ["cflint-basic"],
+  
+  "parser": {
+    "primary": "boxlang",
+    "fallback": "regex",
+    "timeout": 30000,
+    "maxFileSize": 10485760,
+    "encoding": "UTF-8"
+  },
+  
+  "encodingDetection": {
+    "enabled": true,
+    "fallbackEncoding": "UTF-8",
+    "supportedEncodings": ["UTF-8", "UTF-16LE", "UTF-16BE", "ISO-8859-1", "Windows-1252"],
+    "bomDetection": true,
+    "heuristicValidation": true,
+    "maxSampleSize": 8192
+  },
+  
+  "performance": {
+    "parallelProcessing": true,
+    "maxThreads": 4,
+    "enableCaching": true,
+    "cacheDirectory": ".lucee-toolbox-cache"
+  },
+  
+  "linting": {
+    "enabled": true,
+    "severity": {
+      "error": ["SECURITY_VIOLATION", "SYNTAX_ERROR"],
+      "warning": ["NAMING_CONVENTION", "BEST_PRACTICE"],
+      "info": ["STYLE_GUIDE", "DOCUMENTATION"]
+    },
+    "rules": {
+      "naming": {
+        "componentCase": "PascalCase",
+        "functionCase": "camelCase",
+        "variableCase": "camelCase",
+        "constantCase": "UPPER_CASE",
+        "fileCase": "camelCase",
+        "cfcFileCase": "PascalCase",
+        "cfmFileCase": "camelCase",
+        "interfacePrefix": "I",
+        "abstractSuffix": "Abstract",
+        "baseSuffix": "Base"
+      },
+      "whitespace": {
+        "indentSize": 4,
+        "indentType": "spaces",
+        "trimTrailingWhitespace": true,
+        "insertFinalNewline": true,
+        "maxEmptyLines": 1,
+        "requireSpaceAfterKeywords": true,
+        "requireSpaceAroundOperators": true,
+        "noSpaceInParentheses": true
+      },
+      "codeStructure": {
+        "requireCurlyBraces": true,
+        "curlyBraceStyle": "same-line",
+        "maxFunctionLength": 50,
+        "maxFileLength": 1000,
+        "maxLineLength": 150,
+        "requireInit": true,
+        "requireReturnTypes": true,
+        "requireArgumentTypes": true,
+        "useAccessors": true
+      },
+      "bestPractices": {
+        "useVarScoping": true,
+        "useNamedArguments": true,
+        "preferDoubleQuotes": true,
+        "avoidEvaluate": true,
+        "avoidIif": true,
+        "requireCfparam": true,
+        "useCflock": true,
+        "avoidSessionScope": false,
+        "preferNewOverCreateObject": true,
+        "requireCfhttp": true
+      },
+      "security": {
+        "checkSqlInjection": true,
+        "checkXss": true,
+        "checkDirectoryTraversal": true,
+        "requireParamTypes": true,
+        "checkUnscoped": true
+      },
+      "cfmlTags": {
+        "tagCase": "lowercase",
+        "attributeCase": "lowercase",
+        "preferScript": true,
+        "requireClosingTags": true,
+        "selfClosingTags": true
+      }
+    }
+  },
+  
+  "formatting": {
+    "enabled": true,
+    "indentation": {
+      "type": "spaces",
+      "size": 4,
+      "continuationIndent": 8
+    },
+    "braces": {
+      "style": "same-line",
+      "forceForSingleStatement": true
+    },
+    "spacing": {
+      "beforeParentheses": {
+        "function": false,
+        "ifStatement": true,
+        "forStatement": true,
+        "whileStatement": true,
+        "switchStatement": true
+      },
+      "withinParentheses": false,
+      "aroundOperators": true,
+      "beforeComma": false,
+      "afterComma": true,
+      "beforeColon": false,
+      "afterColon": true
+    },
+    "lineBreaks": {
+      "maxEmptyLines": 1,
+      "beforeFunction": 1,
+      "afterFunction": 1,
+      "beforeComponent": 1,
+      "afterComponent": 1,
+      "beforeProperty": 0,
+      "afterProperty": 0
+    },
+    "alignment": {
+      "multiLineArguments": true,
+      "multiLineParameters": true,
+      "chainedMethods": true,
+      "equalSigns": false
+    },
+    "wrapping": {
+      "maxLineLength": 150,
+      "wrapLongLines": true,
+      "argumentsWrap": "chop_down_if_long",
+      "parametersWrap": "chop_down_if_long",
+      "chainingWrap": "chop_down_if_long"
+    }
+  },
+  
+  "output": {
+    "console": {
+      "colors": true,
+      "showSummary": true,
+      "showProgress": true
+    },
+    "bitbucket": {
+      "includeCodeSuggestions": true,
+      "maxAnnotations": 1000
+    },
+    "html": {
+      "theme": "modern",
+      "includeSourceCode": true,
+      "showMetrics": true
+    },
+    "csv": {
+      "delimiter": ",",
+      "includeHeaders": true
+    },
+    "sarif": {
+      "version": "2.1.0",
+      "includeFingerprints": true
+    }
+  },
+  
+  "documentation": {
+    "enableLuceeDocsIntegration": true,
+    "luceeFunctionUrl": "https://docs.lucee.org/reference/functions/{function}.html",
+    "luceeTagUrl": "https://docs.lucee.org/reference/tags/{tag}.html",
+    "cacheDocumentation": true,
+    "cacheExpiry": 86400
+  },
+  
+  "includes": [
+    "**/*.cfm",
+    "**/*.cfc",
+    "**/*.cfml"
+  ],
+  
+  "excludes": [
+    "**/node_modules/**",
+    "**/target/**",
+    "**/build/**",
+    "**/.git/**",
+    "**/*.min.cfm",
+    "**/*.min.cfc",
+    "**/vendor/**"
+  ],
+  
+  "customRules": {
+    "cflint": {
+      "ARG_VAR_CONFLICT": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "ARG_VAR_MIXED": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "AVOID_USING_ABORT": {
+        "enabled": false,
+        "severity": "info"
+      },
+      "AVOID_USING_CFEXECUTE_TAG": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "AVOID_USING_CFINCLUDE_TAG": {
+        "enabled": false,
+        "severity": "info"
+      },
+      "AVOID_USING_CFMODULE_TAG": {
+        "enabled": false,
+        "severity": "info"
+      },
+      "AVOID_USING_CFSETTING_DEBUG": {
+        "enabled": true,
+        "severity": "error"
+      },
+      "AVOID_USING_DEBUG_ATTR": {
+        "enabled": true,
+        "severity": "error"
+      },
+      "AVOID_USING_ISDEFINED": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "AVOID_USING_STRUCTKEYEXISTS": {
+        "enabled": false,
+        "severity": "info"
+      },
+      "CFQUERYPARAM_REQ": {
+        "enabled": true,
+        "severity": "error"
+      },
+      "FUNCTION_HINT_MISSING": {
+        "enabled": false,
+        "severity": "info"
+      },
+      "GLOBAL_VAR": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "NESTED_CFOUTPUT": {
+        "enabled": true,
+        "severity": "error"
+      },
+      "OUTPUT_ATTR": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "QUERYNEW_DATATYPE": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "UNUSED_LOCAL_VARIABLE": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "VAR_INVALID_NAME": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "VAR_IS_TEMPORARY": {
+        "enabled": true,
+        "severity": "warning"
+      }
+    }
+  }
+}
