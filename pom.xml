@@ -7,7 +7,7 @@
 
     <groupId>com.lucee.toolbox</groupId>
     <artifactId>lucee-toolbox</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>Lucee Toolbox - Advanced CFML Linter and Formatter</name>
