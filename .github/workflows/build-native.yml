@@ -30,7 +30,7 @@ jobs:
             executable: lucee-toolbox-macos-x64
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Setup GraalVM
       uses: graalvm/setup-graalvm@v1
@@ -41,7 +41,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Cache Maven packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -100,7 +100,7 @@ jobs:
         echo 'dump(server);' | .\${{ matrix.executable }} --ignore-violations
 
     - name: Upload Binary
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.executable }}
         path: ${{ matrix.executable }}
@@ -112,7 +112,7 @@ jobs:
     if: github.event_name == 'release'
     steps:
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v1
