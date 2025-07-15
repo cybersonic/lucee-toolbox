@@ -30,7 +30,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/lucee/lucee-toolbox.git
+git clone https://github.com/cybersonic/lucee-toolbox.git
 cd lucee-toolbox
 
 # Install GraalVM (optional, for native builds)

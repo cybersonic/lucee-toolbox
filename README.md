@@ -2,7 +2,7 @@
 
 > Advanced CFML Linter and Formatter for Lucee projects
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/lucee/lucee-toolbox)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/cybersonic/lucee-toolbox)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Java Version](https://img.shields.io/badge/java-17%2B-orange)](https://openjdk.java.net/projects/jdk/17/)
 [![Maven Central](https://img.shields.io/badge/maven-1.0.0-blue)](https://mvnrepository.com/artifact/com.lucee.toolbox/lucee-toolbox)
@@ -22,12 +22,12 @@
 
 ### Download JAR
 ```bash
-wget https://github.com/lucee/lucee-toolbox/releases/latest/download/lucee-toolbox-1.0.0.jar
+wget https://github.com/cybersonic/lucee-toolbox/releases/latest/download/lucee-toolbox-1.0.0.jar
 ```
 
 ### Build from Source
 ```bash
-git clone https://github.com/lucee/lucee-toolbox.git
+git clone https://github.com/cybersonic/lucee-toolbox.git
 cd lucee-toolbox
 ./build.sh
 ```
@@ -169,7 +169,7 @@ pipelines:
     - step:
         name: CFML Lint
         script:
-          - wget https://github.com/lucee/lucee-toolbox/releases/latest/download/lucee-toolbox-1.0.0.jar
+          - wget https://github.com/cybersonic/lucee-toolbox/releases/latest/download/lucee-toolbox-1.0.0.jar
           - java -jar lucee-toolbox-1.0.0.jar -i src/ -f bitbucket -o cfml-report.json
         artifacts:
           - cfml-report.json
@@ -190,7 +190,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Download Lucee Toolbox
-        run: wget https://github.com/lucee/lucee-toolbox/releases/latest/download/lucee-toolbox-1.0.0.jar
+        run: wget https://github.com/cybersonic/lucee-toolbox/releases/latest/download/lucee-toolbox-1.0.0.jar
       - name: Lint CFML
         run: java -jar lucee-toolbox-1.0.0.jar -i src/ -f sarif -o cfml.sarif
       - name: Upload SARIF
@@ -260,7 +260,7 @@ mvn test -Dtest=**/*IntegrationTest
 
 ### Development Setup
 ```bash
-git clone https://github.com/lucee/lucee-toolbox.git
+git clone https://github.com/cybersonic/lucee-toolbox.git
 cd lucee-toolbox
 ./build.sh -v
 ```
