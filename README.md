@@ -287,6 +287,28 @@ cd lucee-toolbox
 ./build.sh -v
 ```
 
+### Release Management
+
+The project includes automated release management:
+
+- **Development Releases**: Every push to `main` creates a development release with native binaries
+- **Version Management**: Use `./version.sh [version]` to update version across all files
+- **Automated Releases**: Use `./release.sh [version]` for complete release automation
+- **Changelog Generation**: Use `./changelog.sh --version [version]` to generate release notes
+
+```bash
+# Interactive release with version suggestions
+./release.sh
+
+# Direct version release
+./release.sh 1.0.2
+
+# Generate changelog for upcoming release
+./changelog.sh --version 1.0.2
+```
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for complete development documentation.
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
