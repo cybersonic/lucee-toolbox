@@ -121,54 +121,54 @@ jobs:
         name: ${{ matrix.executable }}
         path: dist/${{ matrix.executable }}
 
-  create-development-release:
-    name: Create Development Release
-    needs: build-native
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      
-    - name: Create Development Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: dev-${{ github.run_number }}
-        name: "Development Build #${{ github.run_number }}"
-        body: |
-          🚀 **Development Build from commit ${{ github.sha }}**
-          
-          This is an automated development release created from the latest main branch.
-          
-          **Changes in this build:**
-          ${{ github.event.head_commit.message }}
-          
-          **Files included:**
-          - `lucee-toolbox-linux-x64` - Linux x64 native binary
-          - `lucee-toolbox-macos-x64` - macOS x64 native binary  
-          - `lucee-toolbox-macos-arm64` - macOS ARM64 native binary
-          - `lucee-toolbox-windows-x64.exe` - Windows x64 native binary
-          
-          **Usage:**
-          ```bash
-          # Make executable (Linux/macOS)
-          chmod +x lucee-toolbox-*
-          
-          # Test the binary
-          ./lucee-toolbox-linux-x64 --version
-          
-          # Lint CFML files
-          ./lucee-toolbox-linux-x64 -i src/
-          ```
-        draft: false
-        prerelease: true
-        files: |
-          lucee-toolbox-linux-x64/lucee-toolbox-linux-x64
-          lucee-toolbox-macos-x64/lucee-toolbox-macos-x64
-          lucee-toolbox-macos-arm64/lucee-toolbox-macos-arm64
-          lucee-toolbox-windows-x64.exe/lucee-toolbox-windows-x64.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # create-development-release:
+  #   name: Create Development Release
+  #   needs: build-native
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   steps:
+  #   - name: Download all artifacts
+  #     uses: actions/download-artifact@v4
+  #     
+  #   - name: Create Development Release
+  #     uses: softprops/action-gh-release@v1
+  #     with:
+  #       tag_name: dev-${{ github.run_number }}
+  #       name: "Development Build #${{ github.run_number }}"
+  #       body: |
+  #         🚀 **Development Build from commit ${{ github.sha }}**
+  #         
+  #         This is an automated development release created from the latest main branch.
+  #         
+  #         **Changes in this build:**
+  #         ${{ github.event.head_commit.message }}
+  #         
+  #         **Files included:**
+  #         - `lucee-toolbox-linux-x64` - Linux x64 native binary
+  #         - `lucee-toolbox-macos-x64` - macOS x64 native binary  
+  #         - `lucee-toolbox-macos-arm64` - macOS ARM64 native binary
+  #         - `lucee-toolbox-windows-x64.exe` - Windows x64 native binary
+  #         
+  #         **Usage:**
+  #         ```bash
+  #         # Make executable (Linux/macOS)
+  #         chmod +x lucee-toolbox-*
+  #         
+  #         # Test the binary
+  #         ./lucee-toolbox-linux-x64 --version
+  #         
+  #         # Lint CFML files
+  #         ./lucee-toolbox-linux-x64 -i src/
+  #         ```
+  #       draft: false
+  #       prerelease: true
+  #       files: |
+  #         lucee-toolbox-linux-x64/lucee-toolbox-linux-x64
+  #         lucee-toolbox-macos-x64/lucee-toolbox-macos-x64
+  #         lucee-toolbox-macos-arm64/lucee-toolbox-macos-arm64
+  #         lucee-toolbox-windows-x64.exe/lucee-toolbox-windows-x64.exe
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-release:
     name: Create Release
