@@ -19,8 +19,12 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+REM Get version from pom.xml
+for /f "tokens=*" %%i in ('mvn help:evaluate -Dexpression=project.version -q -DforceStdout') do set PROJECT_VERSION=%%i
+set JAR_NAME=lucee-toolbox-%PROJECT_VERSION%.jar
+
 REM Ensure JAR is built
-if not exist "target\lucee-toolbox-1.0.0.jar" (
+if not exist "target\%JAR_NAME%" (
     echo 📦 Building JAR first...
     call mvn clean package -DskipTests
     if %errorlevel% neq 0 (
@@ -31,10 +35,11 @@ if not exist "target\lucee-toolbox-1.0.0.jar" (
 
 echo 🎯 Building for platform: windows-x64
 echo 🔨 Creating native executable: lucee-toolbox-windows-x64.exe
+echo 📋 Using JAR: %JAR_NAME%
 
 REM Build native executable
 native-image ^
-    -jar target\lucee-toolbox-1.0.0.jar ^
+    -jar target\%JAR_NAME% ^
     -o lucee-toolbox-windows-x64
 
 if %errorlevel% neq 0 (
