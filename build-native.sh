@@ -62,18 +62,7 @@ echo -e "${YELLOW}🔨 Creating native executable: ${EXECUTABLE_NAME}${NC}"
 
 native-image \
     -jar target/lucee-toolbox-1.0.0.jar \
-    --no-fallback \
-    --enable-https \
-    --report-unsupported-elements-at-runtime \
-    -H:Name="${EXECUTABLE_NAME}" \
-        -H:+ReportExceptionStackTraces \
-        --enable-monitoring=heapdump,jfr \
-        -H:IncludeResources='.*\.properties' \
-    -H:IncludeResources='.*\.json' \
-    -H:IncludeResources='.*\.xml' \
-    -H:IncludeResources='.*\.txt' \
-    -H:IncludeResources='.*\.yml' \
-    -H:IncludeResources='.*\.yaml'
+    -o "${EXECUTABLE_NAME}"
 
 # Check if build was successful
 if [ $? -eq 0 ]; then

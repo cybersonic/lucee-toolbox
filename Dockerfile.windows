@@ -1,0 +1,45 @@
+# Multi-stage Docker build for Windows native binary
+FROM --platform=linux/amd64 mcr.microsoft.com/windows/servercore:ltsc2019 AS windows-build
+
+# Install Chocolatey
+RUN powershell -Command \
+    Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+# Install GraalVM and Maven
+RUN choco install -y graalvm --version=24.0.1
+RUN choco install -y maven --version=3.9.8
+
+# Set environment variables
+ENV GRAALVM_HOME="C:\tools\graalvm\bin"
+ENV PATH="$PATH;$GRAALVM_HOME"
+
+# Install native-image
+RUN gu install native-image
+
+# Copy source code
+COPY . /app
+WORKDIR /app
+
+# Build the project
+RUN mvn clean package -DskipTests
+
+# Build native Windows executable
+RUN native-image \
+    -jar target/lucee-toolbox-1.0.0.jar \
+    --no-fallback \
+    --enable-https \
+    -H:Name=lucee-toolbox-windows-x64 \
+    -H:+ReportExceptionStackTraces \
+    -H:+AllowVMInspection \
+    -H:IncludeResources='.*\.properties' \
+    -H:IncludeResources='.*\.json' \
+    -H:IncludeResources='.*\.xml' \
+    -H:IncludeResources='.*\.txt' \
+    -H:IncludeResources='.*\.yml' \
+    -H:IncludeResources='.*\.yaml'
+
+# Final stage - copy the binary
+FROM scratch
+COPY --from=windows-build /app/lucee-toolbox-windows-x64.exe /lucee-toolbox-windows-x64.exe

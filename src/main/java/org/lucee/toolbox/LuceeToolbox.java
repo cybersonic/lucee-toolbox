@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.Level;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Main entry point for the Lucee Toolbox - Advanced CFML Linter and Formatter
@@ -77,15 +77,44 @@ public class LuceeToolbox {
                 return;
             }
             
-            // Validate required arguments (except for REPL mode)
-            if (!cmd.hasOption("input")) {
-                System.err.println("Error: Input file or directory is required");
-                cli.printHelp(options);
-                System.exit(1);
+            // Handle stdin input
+            String inputPath = cmd.getOptionValue("input");
+            if (inputPath == null) {
+                // Try to read from stdin
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    
+                    // Check if stdin has data by trying to read with a timeout
+                    boolean hasData = reader.ready();
+                    if (hasData) {
+                        while ((line = reader.readLine()) != null) {
+                            sb.append(line).append(System.lineSeparator());
+                        }
+                    }
+                    
+                    if (sb.length() > 0) {
+                        Path tempInput = Files.createTempFile("lucee-stdin-", ".cfc");
+                        Files.writeString(tempInput, sb.toString());
+                        inputPath = tempInput.toString();
+                        
+                        // Schedule temp file for deletion on exit
+                        tempInput.toFile().deleteOnExit();
+                    }
+                } catch (IOException e) {
+                    // Stdin not available or error reading
+                }
+                
+                // If still no input, show error
+                if (inputPath == null) {
+                    System.err.println("Error: Input file/directory required or pipe CFML code to stdin");
+                    cli.printHelp(options);
+                    System.exit(1);
+                }
             }
             
             // Parse command line options first to get verbose/quiet flags
-            String inputPath = cmd.getOptionValue("input");
             String outputFormat = cmd.getOptionValue("format", "console");
             String outputFile = cmd.getOptionValue("output");
             boolean verbose = cmd.hasOption("verbose");

@@ -1,0 +1,120 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Project",
+            "type": "shell",
+            "command": "mvn",
+            "args": ["compile"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$java"
+        },
+        {
+            "label": "Clean Build",
+            "type": "shell",
+            "command": "mvn",
+            "args": ["clean", "compile"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$java"
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "mvn",
+            "args": ["test"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$java"
+        },
+        {
+            "label": "Quick Parse Test",
+            "type": "shell",
+            "command": "mvn",
+            "args": [
+                "exec:java",
+                "-Dexec.mainClass=org.lucee.toolbox.debug.ParseDebugExample",
+                "-Dexec.classpathScope=runtime"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Interactive Parser Tester",
+            "type": "shell",
+            "command": "mvn",
+            "args": [
+                "exec:java",
+                "-Dexec.mainClass=org.lucee.toolbox.debug.ParserTester",
+                "-Dexec.classpathScope=runtime"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "isBackground": false,
+            "runOptions": {
+                "instanceLimit": 1
+            }
+        },
+        {
+            "label": "Parse Sample CFC",
+            "type": "shell",
+            "command": "mvn",
+            "args": [
+                "exec:java",
+                "-Dexec.mainClass=org.lucee.toolbox.LuceeToolbox",
+                "-Dexec.classpathScope=runtime",
+                "-Dexec.args=--parser boxlang --file examples/sample.cfc --verbose"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Generate Package",
+            "type": "shell",
+            "command": "mvn",
+            "args": ["package", "-DskipTests"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$java"
+        }
+    ]
+}

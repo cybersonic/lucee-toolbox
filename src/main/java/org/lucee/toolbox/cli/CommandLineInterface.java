@@ -16,7 +16,7 @@ public class CommandLineInterface {
                 .longOpt("input")
                 .hasArg()
                 .argName("PATH")
-                .desc("Input file or directory to process (required)")
+                .desc("Input file or directory to process (or pipe CFML code to stdin)")
                 .required(false)
                 .build());
         
@@ -221,7 +221,9 @@ public class CommandLineInterface {
                        "  lucee-toolbox -i large-app/ --performance # Optimize for large codebase\n" +
                        "  lucee-toolbox -i src/ --ignore-violations # Don't exit with error for violations (IDE friendly)\n" +
                        "  lucee-toolbox -i src/ --no-exit-error   # Same as --ignore-violations\n" +
-                       "  lucee-toolbox -i src/ --show-config     # Show resolved configuration\n\n" +
+                       "  lucee-toolbox -i src/ --show-config     # Show resolved configuration\n" +
+                       "  echo 'dump(server);' | lucee-toolbox    # Lint CFML code from stdin\n" +
+                       "  cat myfile.cfc | lucee-toolbox -m format # Format CFML code from stdin\n\n" +
                        "For more information: https://github.com/lucee/lucee-toolbox\n";
         
         formatter.printHelp("lucee-toolbox", header, options, footer, true);

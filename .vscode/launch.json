@@ -1,0 +1,58 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug Lucee Toolbox - Parse Example",
+            "request": "launch",
+            "mainClass": "org.lucee.toolbox.debug.ParseDebugExample",
+            "projectName": "lucee-toolbox",
+            "args": [],
+            "vmArgs": [
+                "-Dlogback.configurationFile=src/main/resources/logback-debug.xml",
+                "-Dlucee.toolbox.debug=true"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "java",
+            "name": "Debug Lucee Toolbox - Main CLI",
+            "request": "launch",
+            "mainClass": "org.lucee.toolbox.LuceeToolbox",
+            "projectName": "lucee-toolbox",
+            "args": [
+                "--parser", "boxlang",
+                "--file", "examples/sample.cfc",
+                "--verbose"
+            ],
+            "vmArgs": [
+                "-Dlogback.configurationFile=src/main/resources/logback-debug.xml",
+                "-Dlucee.toolbox.debug=true"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "java",
+            "name": "Debug Lucee Toolbox - Test Parser",
+            "request": "launch",
+            "mainClass": "org.lucee.toolbox.debug.ParserTester",
+            "projectName": "lucee-toolbox",
+            "args": [],
+            "vmArgs": [
+                "-Dlogback.configurationFile=src/main/resources/logback-debug.xml",
+                "-Dlucee.toolbox.debug=true"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "java",
+            "name": "Attach to JVM",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 5005
+        }
+    ]
+}

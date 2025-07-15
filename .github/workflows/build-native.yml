@@ -62,36 +62,14 @@ jobs:
       run: |
         native-image \
           -jar target/${{ env.JAR_NAME }} \
-          --no-fallback \
-          --enable-https \
-          --report-unsupported-elements-at-runtime \
-          -H:Name=${{ matrix.executable }} \
-          -H:+ReportExceptionStackTraces \
-          --enable-monitoring=heapdump,jfr \
-          -H:IncludeResources='.*\.properties' \
-          -H:IncludeResources='.*\.json' \
-          -H:IncludeResources='.*\.xml' \
-          -H:IncludeResources='.*\.txt' \
-          -H:IncludeResources='.*\.yml' \
-          -H:IncludeResources='.*\.yaml'
+          -o ${{ matrix.executable }}
 
     - name: Build Native Binary (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         native-image `
           -jar target/${{ env.JAR_NAME }} `
-          --no-fallback `
-          --enable-https `
-          --report-unsupported-elements-at-runtime `
-          -H:Name=${{ matrix.executable }} `
-          -H:+ReportExceptionStackTraces `
-          --enable-monitoring=heapdump,jfr `
-          -H:IncludeResources=".*\.properties" `
-          -H:IncludeResources=".*\.json" `
-          -H:IncludeResources=".*\.xml" `
-          -H:IncludeResources=".*\.txt" `
-          -H:IncludeResources=".*\.yml" `
-          -H:IncludeResources=".*\.yaml"
+          -o ${{ matrix.executable }}
 
     - name: Test Native Binary (Unix)
       if: matrix.os != 'windows-latest'

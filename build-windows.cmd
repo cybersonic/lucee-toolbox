@@ -35,18 +35,7 @@ echo 🔨 Creating native executable: lucee-toolbox-windows-x64.exe
 REM Build native executable
 native-image ^
     -jar target\lucee-toolbox-1.0.0.jar ^
-    --no-fallback ^
-    --enable-https ^
-    --report-unsupported-elements-at-runtime ^
-    -H:Name=lucee-toolbox-windows-x64 ^
-    -H:+ReportExceptionStackTraces ^
-    --enable-monitoring=heapdump,jfr ^
-    -H:IncludeResources=".*\.properties" ^
-    -H:IncludeResources=".*\.json" ^
-    -H:IncludeResources=".*\.xml" ^
-    -H:IncludeResources=".*\.txt" ^
-    -H:IncludeResources=".*\.yml" ^
-    -H:IncludeResources=".*\.yaml"
+    -o lucee-toolbox-windows-x64
 
 if %errorlevel% neq 0 (
     echo ❌ Native executable build failed!
