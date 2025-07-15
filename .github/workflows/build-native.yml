@@ -20,10 +20,10 @@ jobs:
             platform: linux
             arch: x64
             executable: lucee-toolbox-linux-x64
-          # - os: windows-latest
-          #   platform: windows
-          #   arch: x64
-          #   executable: lucee-toolbox-windows-x64.exe
+          - os: windows-latest
+            platform: windows
+            arch: x64
+            executable: lucee-toolbox-windows-x64.exe
           - os: macos-latest
             platform: macos
             arch: x64
@@ -55,15 +55,30 @@ jobs:
       run: |
         mvn clean package -DskipTests
 
-    - name: Get version from pom.xml
+    - name: Get version from pom.xml (Unix)
+      if: matrix.os != 'windows-latest'
       run: |
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
         echo "JAR_NAME=lucee-toolbox-$VERSION.jar" >> $GITHUB_ENV
 
-    - name: Create dist directory
+    - name: Get version from pom.xml (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        $VERSION = mvn help:evaluate -Dexpression=project.version -q -DforceStdout
+        echo "PROJECT_VERSION=$VERSION" >> $env:GITHUB_ENV
+        echo "JAR_NAME=lucee-toolbox-$VERSION.jar" >> $env:GITHUB_ENV
+
+    - name: Create dist directory (Unix)
+      if: matrix.os != 'windows-latest'
       run: |
         mkdir -p dist
+
+    - name: Create dist directory (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        if not exist "dist" mkdir dist
 
     - name: Build Native Binary (Unix)
       if: matrix.os != 'windows-latest'
@@ -72,13 +87,13 @@ jobs:
           -jar target/${{ env.JAR_NAME }} \
           -o dist/${{ matrix.executable }}
 
-    # - name: Build Native Binary (Windows)
-    #   if: matrix.os == 'windows-latest'
-    #   run: |
-    #     mkdir -p dist
-    #     native-image `
-    #       -jar target/${{ env.JAR_NAME }} `
-    #       -o dist/${{ matrix.executable }}
+    - name: Build Native Binary (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        native-image `
+          -jar target/${{ env.JAR_NAME }} `
+          -o dist/${{ matrix.executable }}
 
     - name: Test Native Binary (Unix)
       if: matrix.os != 'windows-latest'
@@ -88,9 +103,10 @@ jobs:
 
     - name: Test Native Binary (Windows)
       if: matrix.os == 'windows-latest'
+      shell: pwsh
       run: |
-        .\dist\${{ matrix.executable }} --version
-        echo 'dump(server);' | .\dist\${{ matrix.executable }} --ignore-violations - || echo "Windows stdin test completed"
+        & ".\dist\${{ matrix.executable }}" --version
+        echo 'dump(server);' | & ".\dist\${{ matrix.executable }}" --ignore-violations; if ($LASTEXITCODE -ne 0) { Write-Host "Windows stdin test completed with exit code $LASTEXITCODE" }
 
     - name: Upload Binary
       uses: actions/upload-artifact@v4
@@ -113,6 +129,7 @@ jobs:
         files: |
           lucee-toolbox-linux-x64/lucee-toolbox-linux-x64
           lucee-toolbox-macos-x64/lucee-toolbox-macos-x64
-          # lucee-toolbox-windows-x64.exe/lucee-toolbox-windows-x64.exe
+          lucee-toolbox-macos-arm64/lucee-toolbox-macos-arm64
+          lucee-toolbox-windows-x64.exe/lucee-toolbox-windows-x64.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

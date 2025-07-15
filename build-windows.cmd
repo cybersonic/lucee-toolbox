@@ -23,6 +23,9 @@ REM Get version from pom.xml
 for /f "tokens=*" %%i in ('mvn help:evaluate -Dexpression=project.version -q -DforceStdout') do set PROJECT_VERSION=%%i
 set JAR_NAME=lucee-toolbox-%PROJECT_VERSION%.jar
 
+echo 📋 Project Version: %PROJECT_VERSION%
+echo 📋 JAR Name: %JAR_NAME%
+
 REM Ensure JAR is built
 if not exist "target\%JAR_NAME%" (
     echo 📦 Building JAR first...

@@ -33,6 +33,8 @@ cd lucee-toolbox
 ```
 
 ### Build Native Executable (GraalVM)
+
+#### Linux/macOS
 ```bash
 # Install GraalVM (using SDKMAN)
 sdk install java 21.0.1-graal
@@ -43,6 +45,22 @@ gu install native-image
 
 # Or use the dedicated script for cross-platform builds
 ./build-native.sh
+```
+
+#### Windows
+```cmd
+# Install GraalVM for Windows
+# 1. Download GraalVM from: https://github.com/graalvm/graalvm-ce-builds/releases
+# 2. Set JAVA_HOME to GraalVM directory
+# 3. Add %JAVA_HOME%\bin to PATH
+# 4. Install native-image component
+gu install native-image
+
+# Build using batch script
+build-windows.cmd
+
+# Or build using PowerShell script
+.\build-windows.ps1
 ```
 
 ### Maven Dependency
@@ -58,11 +76,15 @@ gu install native-image
 
 ### Lint CFML Files
 ```bash
-# Using JAR
+# Using JAR (cross-platform)
 java -jar dist/lucee-toolbox-1.0.0.jar -i MyComponent.cfc
 
 # Using native executable (faster startup)
+# Linux/macOS
 ./dist/lucee-toolbox -i MyComponent.cfc
+
+# Windows
+dist\lucee-toolbox-windows-x64.exe -i MyComponent.cfc
 
 # Lint entire project
 ./dist/lucee-toolbox -i src/ -f console
