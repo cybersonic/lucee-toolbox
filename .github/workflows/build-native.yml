@@ -1,0 +1,125 @@
+name: Build Native Binaries
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [published]
+
+jobs:
+  build-native:
+    name: Build Native Binary
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+            executable: lucee-toolbox-linux-x64
+          - os: windows-latest
+            platform: windows
+            arch: x64
+            executable: lucee-toolbox-windows-x64.exe
+          - os: macos-latest
+            platform: macos
+            arch: x64
+            executable: lucee-toolbox-macos-x64
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup GraalVM
+      uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '17'
+        distribution: 'graalvm'
+        components: 'native-image'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Build JAR
+      run: |
+        mvn clean package -DskipTests
+
+    - name: Build Native Binary (Unix)
+      if: matrix.os != 'windows-latest'
+      run: |
+        native-image \
+          -jar target/lucee-toolbox-1.0.0.jar \
+          --no-fallback \
+          --enable-https \
+          --report-unsupported-elements-at-runtime \
+          -H:Name=${{ matrix.executable }} \
+          -H:+ReportExceptionStackTraces \
+          -H:+AllowVMInspection \
+          -H:IncludeResources='.*\.properties' \
+          -H:IncludeResources='.*\.json' \
+          -H:IncludeResources='.*\.xml' \
+          -H:IncludeResources='.*\.txt' \
+          -H:IncludeResources='.*\.yml' \
+          -H:IncludeResources='.*\.yaml'
+
+    - name: Build Native Binary (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        native-image `
+          -jar target/lucee-toolbox-1.0.0.jar `
+          --no-fallback `
+          --enable-https `
+          --report-unsupported-elements-at-runtime `
+          -H:Name=${{ matrix.executable }} `
+          -H:+ReportExceptionStackTraces `
+          -H:+AllowVMInspection `
+          -H:IncludeResources=".*\.properties" `
+          -H:IncludeResources=".*\.json" `
+          -H:IncludeResources=".*\.xml" `
+          -H:IncludeResources=".*\.txt" `
+          -H:IncludeResources=".*\.yml" `
+          -H:IncludeResources=".*\.yaml"
+
+    - name: Test Native Binary (Unix)
+      if: matrix.os != 'windows-latest'
+      run: |
+        ./${{ matrix.executable }} --version
+        echo 'dump(server);' | ./${{ matrix.executable }} --ignore-violations || true
+
+    - name: Test Native Binary (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        .\${{ matrix.executable }} --version
+        echo 'dump(server);' | .\${{ matrix.executable }} --ignore-violations
+
+    - name: Upload Binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.executable }}
+        path: ${{ matrix.executable }}
+
+  create-release:
+    name: Create Release
+    needs: build-native
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          lucee-toolbox-linux-x64/lucee-toolbox-linux-x64
+          lucee-toolbox-windows-x64.exe/lucee-toolbox-windows-x64.exe
+          lucee-toolbox-macos-x64/lucee-toolbox-macos-x64
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
