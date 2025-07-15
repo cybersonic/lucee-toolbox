@@ -51,17 +51,23 @@ jobs:
       run: |
         mvn clean package -DskipTests
 
+    - name: Get version from pom.xml
+      run: |
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
+        echo "JAR_NAME=lucee-toolbox-$VERSION.jar" >> $GITHUB_ENV
+
     - name: Build Native Binary (Unix)
       if: matrix.os != 'windows-latest'
       run: |
         native-image \
-          -jar target/lucee-toolbox-1.0.0.jar \
+          -jar target/${{ env.JAR_NAME }} \
           --no-fallback \
           --enable-https \
           --report-unsupported-elements-at-runtime \
           -H:Name=${{ matrix.executable }} \
           -H:+ReportExceptionStackTraces \
-          -H:+AllowVMInspection \
+          --enable-monitoring \
           -H:IncludeResources='.*\.properties' \
           -H:IncludeResources='.*\.json' \
           -H:IncludeResources='.*\.xml' \
@@ -73,13 +79,13 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         native-image `
-          -jar target/lucee-toolbox-1.0.0.jar `
+          -jar target/${{ env.JAR_NAME }} `
           --no-fallback `
           --enable-https `
           --report-unsupported-elements-at-runtime `
           -H:Name=${{ matrix.executable }} `
           -H:+ReportExceptionStackTraces `
-          -H:+AllowVMInspection `
+          --enable-monitoring `
           -H:IncludeResources=".*\.properties" `
           -H:IncludeResources=".*\.json" `
           -H:IncludeResources=".*\.xml" `
