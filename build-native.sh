@@ -66,9 +66,9 @@ native-image \
     --enable-https \
     --report-unsupported-elements-at-runtime \
     -H:Name="${EXECUTABLE_NAME}" \
-    -H:+ReportExceptionStackTraces \
-    -H:+AllowVMInspection \
-    -H:IncludeResources='.*\.properties' \
+        -H:+ReportExceptionStackTraces \
+        --enable-monitoring=heapdump,jfr \
+        -H:IncludeResources='.*\.properties' \
     -H:IncludeResources='.*\.json' \
     -H:IncludeResources='.*\.xml' \
     -H:IncludeResources='.*\.txt' \

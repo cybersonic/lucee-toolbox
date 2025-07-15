@@ -67,7 +67,7 @@ jobs:
           --report-unsupported-elements-at-runtime \
           -H:Name=${{ matrix.executable }} \
           -H:+ReportExceptionStackTraces \
-          --enable-monitoring \
+          --enable-monitoring=heapdump,jfr \
           -H:IncludeResources='.*\.properties' \
           -H:IncludeResources='.*\.json' \
           -H:IncludeResources='.*\.xml' \
@@ -85,7 +85,7 @@ jobs:
           --report-unsupported-elements-at-runtime `
           -H:Name=${{ matrix.executable }} `
           -H:+ReportExceptionStackTraces `
-          --enable-monitoring `
+          --enable-monitoring=heapdump,jfr `
           -H:IncludeResources=".*\.properties" `
           -H:IncludeResources=".*\.json" `
           -H:IncludeResources=".*\.xml" `
