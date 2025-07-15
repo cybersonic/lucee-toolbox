@@ -64,11 +64,13 @@ jobs:
 
     - name: Get version from pom.xml (Windows)
       if: matrix.os == 'windows-latest'
-      shell: cmd
+      shell: pwsh
       run: |
-        for /f "tokens=*" %%i in ('mvn help:evaluate -Dexpression=project.version -q -DforceStdout') do set PROJECT_VERSION=%%i
-        echo PROJECT_VERSION=%PROJECT_VERSION% >> %GITHUB_ENV%
-        echo JAR_NAME=lucee-toolbox-%PROJECT_VERSION%.jar >> %GITHUB_ENV%
+        [xml]$pom = Get-Content -Path "pom.xml"
+        $version = $pom.project.version
+        Write-Host "Detected version: $version"
+        echo "PROJECT_VERSION=$version" >> $env:GITHUB_ENV
+        echo "JAR_NAME=lucee-toolbox-$version.jar" >> $env:GITHUB_ENV
 
     - name: Create dist directory (Unix)
       if: matrix.os != 'windows-latest'
@@ -77,9 +79,11 @@ jobs:
 
     - name: Create dist directory (Windows)
       if: matrix.os == 'windows-latest'
-      shell: cmd
+      shell: pwsh
       run: |
-        if not exist "dist" mkdir dist
+        if (-not (Test-Path "dist")) {
+          New-Item -ItemType Directory -Path "dist" | Out-Null
+        }
 
     - name: Build Native Binary (Unix)
       if: matrix.os != 'windows-latest'
