@@ -8,6 +8,10 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build-native:
     name: Build Native Binary
@@ -135,6 +139,15 @@ jobs:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
       
+    - name: Create git tag for development release
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag -a "dev-${{ github.run_number }}" -m "Development Build #${{ github.run_number }} (v${{ env.PROJECT_VERSION }})"
+        git push origin "dev-${{ github.run_number }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
     - name: Create Development Release
       uses: softprops/action-gh-release@v1
       with:
