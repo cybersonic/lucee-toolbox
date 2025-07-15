@@ -190,16 +190,35 @@ public class FormattingEngine {
         }
         
         // Read file content
-        String content = Files.readString(file, java.nio.charset.Charset.forName(configManager.getEncoding()));
+        String originalContent = Files.readString(file, java.nio.charset.Charset.forName(configManager.getEncoding()));
         
-        // Create a formatting change (dummy implementation)
-        FormattingChange change = new FormattingChange(file.toString(), 1, 100, content, "formattedContent", "Refactoring", "Formatted code");
-        result.addFormattingChange(change);
-        result.getStats().incrementFilesProcessed();
+        // Apply basic formatting
+        String formattedContent = applyBasicFormatting(originalContent);
         
-        if (!quiet && verbose) {
-            logger.debug("Applied change in {}", file);
+        // Check if formatting actually changed anything
+        if (!originalContent.equals(formattedContent)) {
+            // Create a meaningful formatting change
+            FormattingChange change = new FormattingChange(
+                file.toString(), 
+                1, 
+                originalContent.split("\n").length, 
+                originalContent, 
+                formattedContent, 
+                "formatting", 
+                "Applied code formatting (indentation, line breaks, etc.)"
+            );
+            result.addFormattingChange(change);
+            
+            if (!quiet && verbose) {
+                logger.debug("Applied formatting change in {}", file);
+            }
+        } else {
+            if (!quiet && verbose) {
+                logger.debug("No formatting changes needed in {}", file);
+            }
         }
+        
+        result.getStats().incrementFilesProcessed();
     }
     
     /**
@@ -265,5 +284,39 @@ public class FormattingEngine {
                 .replace("?", "[^/]");
         
         return path.matches(regex);
+    }
+    
+    /**
+     * Apply basic formatting to CFML code
+     */
+    private String applyBasicFormatting(String content) {
+        // Basic formatting improvements
+        String formatted = content;
+        
+        // Normalize line endings
+        formatted = formatted.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        
+        // Remove trailing whitespace from lines
+        formatted = formatted.replaceAll("[ \\t]+$", "");
+        
+        // Ensure consistent indentation (convert tabs to spaces)
+        int indentSize = configManager.getIndentSize();
+        String spaces = " ".repeat(indentSize);
+        formatted = formatted.replaceAll("\\t", spaces);
+        
+        // Add consistent spacing around operators
+        formatted = formatted.replaceAll("\\s*=\\s*", " = ");
+        formatted = formatted.replaceAll("\\s*\\+\\s*", " + ");
+        formatted = formatted.replaceAll("\\s*-\\s*", " - ");
+        formatted = formatted.replaceAll("\\s*\\*\\s*", " * ");
+        formatted = formatted.replaceAll("\\s*/\\s*", " / ");
+        
+        // Clean up multiple blank lines
+        formatted = formatted.replaceAll("\n{3,}", "\n\n");
+        
+        // Ensure file ends with single newline
+        formatted = formatted.replaceAll("\n*$", "\n");
+        
+        return formatted;
     }
 }

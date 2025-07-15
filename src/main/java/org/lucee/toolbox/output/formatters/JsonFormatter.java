@@ -56,6 +56,8 @@ public class JsonFormatter implements OutputFormatter {
                 violationNode.put("file", violation.getFilePath());
                 violationNode.put("line", violation.getLine());
                 violationNode.put("column", violation.getColumn());
+                violationNode.put("endLine", violation.getEndLine());
+                violationNode.put("endColumn", violation.getEndColumn());
                 
                 if (violation.getRuleCategory() != null) {
                     violationNode.put("category", violation.getRuleCategory());

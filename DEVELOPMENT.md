@@ -21,9 +21,9 @@
 
 ### Prerequisites
 
-- **Java 11+** - Required for development
+- **Java 17** - Required for development (specifically 17.0.12-graal)
 - **Maven 3.8+** - For building and dependency management
-- **GraalVM 21+** - Optional, for native image builds
+- **SDKMan** - For managing Java versions
 - **Git** - For version control
 
 ### Development Setup
@@ -33,16 +33,14 @@
 git clone https://github.com/cybersonic/lucee-toolbox.git
 cd lucee-toolbox
 
-# Install GraalVM (optional, for native builds)
-sdk install java 21.0.1-graal
-sdk use java 21.0.1-graal
-gu install native-image
+# Set up development environment (installs correct Java version)
+./scripts/setup-dev.sh
 
 # Build the project
-./build.sh
+./scripts/build.sh
 
 # Run quick test
-java -jar target/lucee-toolbox-1.0.0.jar --version
+./scripts/run.sh --version
 ```
 
 ---
@@ -53,19 +51,19 @@ java -jar target/lucee-toolbox-1.0.0.jar --version
 
 ```bash
 # Standard JAR build
-./build.sh
+./scripts/build.sh
 
 # Clean build with verbose output
-./build.sh -c -v
+./scripts/build.sh -c -v
 
 # Build with test coverage profiling
-./build.sh -p
+./scripts/build.sh -p
 
 # Skip tests (faster build)
-./build.sh -s
+./scripts/build.sh -s
 
-# Package only (no compilation)
-./build.sh --package-only
+# Minimal build (fewer dependencies)
+./scripts/build.sh -m
 ```
 
 ### Native Image Build

@@ -12,6 +12,7 @@ import org.lucee.toolbox.repl.EnhancedCFMLRepl;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.ILoggerFactory;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.Level;
 
@@ -350,22 +351,68 @@ public class LuceeToolbox {
      * Configure logging levels based on verbose and quiet flags
      */
     private static void configureLogging(boolean verbose, boolean quiet) {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
-        ch.qos.logback.classic.Logger toolboxLogger = loggerContext.getLogger("org.lucee.toolbox");
-        
+        // Configure slf4j-simple properties early, before any loggers are initialized
         if (quiet) {
-            // Quiet mode: suppress all logging to console except errors
-            rootLogger.setLevel(Level.ERROR);
-            toolboxLogger.setLevel(Level.ERROR);
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "error");
+            System.setProperty("org.slf4j.simpleLogger.log.org.lucee.toolbox", "error");
+            System.setProperty("org.slf4j.simpleLogger.log.root", "error");
+            // Suppress specific noisy loggers
+            System.setProperty("org.slf4j.simpleLogger.log.org.lucee.toolbox.core.config.ConfigurationManager", "error");
+            System.setProperty("org.slf4j.simpleLogger.log.org.lucee.toolbox.core.util.EncodingDetector", "error");
         } else if (verbose) {
-            // Verbose mode: show all logging including INFO and DEBUG
-            rootLogger.setLevel(Level.INFO);
-            toolboxLogger.setLevel(Level.DEBUG);
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
+            System.setProperty("org.slf4j.simpleLogger.log.org.lucee.toolbox", "debug");
+            System.setProperty("org.slf4j.simpleLogger.log.root", "info");
         } else {
-            // Default mode: only show warnings and errors
-            rootLogger.setLevel(Level.WARN);
-            toolboxLogger.setLevel(Level.WARN);
+            // Default mode: only show errors for most loggers, warn for toolbox
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "error");
+            System.setProperty("org.slf4j.simpleLogger.log.org.lucee.toolbox", "warn");
+            System.setProperty("org.slf4j.simpleLogger.log.root", "error");
+            // Suppress specific noisy loggers
+            System.setProperty("org.slf4j.simpleLogger.log.org.lucee.toolbox.core.config.ConfigurationManager", "error");
+            System.setProperty("org.slf4j.simpleLogger.log.org.lucee.toolbox.core.util.EncodingDetector", "error");
+        }
+        
+        // Add timestamp and thread info only in verbose mode
+        if (verbose) {
+            System.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
+            System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "yyyy-MM-dd HH:mm:ss");
+            System.setProperty("org.slf4j.simpleLogger.showThreadName", "true");
+            System.setProperty("org.slf4j.simpleLogger.showLogName", "true");
+            System.setProperty("org.slf4j.simpleLogger.showShortLogName", "true");
+        } else {
+            System.setProperty("org.slf4j.simpleLogger.showDateTime", "false");
+            System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
+            System.setProperty("org.slf4j.simpleLogger.showLogName", "false");
+            System.setProperty("org.slf4j.simpleLogger.showShortLogName", "false");
+        }
+        
+        // Try to configure Logback if available (after setting system properties)
+        try {
+            ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
+            if (loggerFactory instanceof ch.qos.logback.classic.LoggerContext) {
+                // Logback is available, use it
+                ch.qos.logback.classic.LoggerContext loggerContext = (ch.qos.logback.classic.LoggerContext) loggerFactory;
+                ch.qos.logback.classic.Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+                ch.qos.logback.classic.Logger toolboxLogger = loggerContext.getLogger("org.lucee.toolbox");
+                
+                if (quiet) {
+                    // Quiet mode: suppress all logging to console except errors
+                    rootLogger.setLevel(ch.qos.logback.classic.Level.ERROR);
+                    toolboxLogger.setLevel(ch.qos.logback.classic.Level.ERROR);
+                } else if (verbose) {
+                    // Verbose mode: show all logging including INFO and DEBUG
+                    rootLogger.setLevel(ch.qos.logback.classic.Level.INFO);
+                    toolboxLogger.setLevel(ch.qos.logback.classic.Level.DEBUG);
+                } else {
+                    // Default mode: only show warnings and errors
+                    rootLogger.setLevel(ch.qos.logback.classic.Level.ERROR);
+                    toolboxLogger.setLevel(ch.qos.logback.classic.Level.WARN);
+                }
+            }
+        } catch (Exception e) {
+            // If logging configuration fails, just continue silently
+            // The application will still work, just without customized logging levels
         }
     }
 }

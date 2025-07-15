@@ -1,5 +1,6 @@
 package org.lucee.toolbox.output.formatters;
 
+import org.lucee.toolbox.core.model.FormattingChange;
 import org.lucee.toolbox.core.model.LintingViolation;
 import org.lucee.toolbox.core.model.ToolboxResult;
 import org.lucee.toolbox.output.OutputFormatter;
@@ -74,8 +75,39 @@ public class ConsoleFormatter implements OutputFormatter {
         // Formatting changes
         if (!result.getFormattingChanges().isEmpty()) {
             output.append(BOLD).append("Formatting Changes:").append(RESET).append("\n");
-            output.append(GREEN).append("Applied ").append(result.getFormattingChanges().size())
-                  .append(" formatting changes").append(RESET).append("\n\n");
+            
+            // Check if this is a dry-run (metadata would indicate it)
+            boolean isDryRun = Boolean.TRUE.equals(result.getMetadata("dryRun"));
+            
+            if (isDryRun) {
+                // Show detailed changes in dry-run mode
+                for (FormattingChange change : result.getFormattingChanges()) {
+                    output.append(YELLOW).append("CHANGE ").append(RESET)
+                          .append(change.getFilePath())
+                          .append(":")
+                          .append(change.getStartLine())
+                          .append("-")
+                          .append(change.getEndLine())
+                          .append(" ")
+                          .append(change.getDescription())
+                          .append(" [")
+                          .append(change.getChangeType())
+                          .append("]\n");
+                    
+                    // Show before/after if available
+                    if (change.getOriginalText() != null && change.getFormattedText() != null) {
+                        output.append("\n")
+                              .append("Before:\n")
+                              .append(RED).append("- ").append(change.getOriginalText().replace("\n", "\n- ")).append(RESET).append("\n\n")
+                              .append("After:\n")
+                              .append(GREEN).append("+ ").append(change.getFormattedText().replace("\n", "\n+ ")).append(RESET).append("\n\n");
+                    }
+                }
+            } else {
+                // Show simple count for actual formatting
+                output.append(GREEN).append("Applied ").append(result.getFormattingChanges().size())
+                      .append(" formatting changes").append(RESET).append("\n\n");
+            }
         }
         
         // Errors
