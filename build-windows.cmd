@@ -37,10 +37,13 @@ echo 🎯 Building for platform: windows-x64
 echo 🔨 Creating native executable: lucee-toolbox-windows-x64.exe
 echo 📋 Using JAR: %JAR_NAME%
 
+REM Create dist directory
+if not exist "dist" mkdir dist
+
 REM Build native executable
 native-image ^
     -jar target\%JAR_NAME% ^
-    -o lucee-toolbox-windows-x64
+    -o dist\lucee-toolbox-windows-x64
 
 if %errorlevel% neq 0 (
     echo ❌ Native executable build failed!
@@ -49,20 +52,20 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ✅ Native executable created successfully!
-echo 📋 Executable: lucee-toolbox-windows-x64.exe
+echo 📋 Executable: dist\lucee-toolbox-windows-x64.exe
 echo.
 
 REM Test the executable
 echo 🧪 Testing native executable...
-lucee-toolbox-windows-x64.exe --version
+dist\lucee-toolbox-windows-x64.exe --version
 
 echo.
 echo Usage:
-echo   lucee-toolbox-windows-x64.exe -i src\
+echo   dist\lucee-toolbox-windows-x64.exe -i src\
 echo.
 
 REM Create a generic copy for convenience
-if exist "lucee-toolbox.exe" del "lucee-toolbox.exe"
-copy "lucee-toolbox-windows-x64.exe" "lucee-toolbox.exe"
-echo 📋 Generic executable created: lucee-toolbox.exe
+if exist "dist\lucee-toolbox.exe" del "dist\lucee-toolbox.exe"
+copy "dist\lucee-toolbox-windows-x64.exe" "dist\lucee-toolbox.exe"
+echo 📋 Generic executable created: dist\lucee-toolbox.exe
 echo.

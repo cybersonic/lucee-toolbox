@@ -4,7 +4,7 @@
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/lucee/lucee-toolbox)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Java Version](https://img.shields.io/badge/java-11%2B-orange)](https://openjdk.java.net/projects/jdk/11/)
+[![Java Version](https://img.shields.io/badge/java-17%2B-orange)](https://openjdk.java.net/projects/jdk/17/)
 [![Maven Central](https://img.shields.io/badge/maven-1.0.0-blue)](https://mvnrepository.com/artifact/com.lucee.toolbox/lucee-toolbox)
 
 ## 🚀 Features
@@ -59,34 +59,34 @@ gu install native-image
 ### Lint CFML Files
 ```bash
 # Using JAR
-java -jar lucee-toolbox-1.0.0.jar -i MyComponent.cfc
+java -jar dist/lucee-toolbox-1.0.0.jar -i MyComponent.cfc
 
 # Using native executable (faster startup)
-./lucee-toolbox -i MyComponent.cfc
+./dist/lucee-toolbox -i MyComponent.cfc
 
 # Lint entire project
-./lucee-toolbox -i src/ -f console
+./dist/lucee-toolbox -i src/ -f console
 
 # Generate Bitbucket Pipelines report
-./lucee-toolbox -i src/ -f bitbucket -o report.json
+./dist/lucee-toolbox -i src/ -f bitbucket -o report.json
 ```
 
 ### Format CFML Files
 ```bash
 # Format a file (dry run)
-./lucee-toolbox -i MyComponent.cfc -m format --dry-run
+./dist/lucee-toolbox -i MyComponent.cfc -m format --dry-run
 
 # Format and show diff
-./lucee-toolbox -i src/ -m format --diff
+./dist/lucee-toolbox -i src/ -m format --diff
 
 # Format with backup
-./lucee-toolbox -i src/ -m format --backup
+./dist/lucee-toolbox -i src/ -m format --backup
 ```
 
 ### Both Lint and Format
 ```bash
 # Lint and format in one pass
-./lucee-toolbox -i src/ -m both --performance
+./dist/lucee-toolbox -i src/ -m both --performance
 ```
 
 ## ⚙️ Configuration
@@ -162,7 +162,7 @@ Create a `lucee-toolbox.json` file in your project root:
 
 ### Bitbucket Pipelines
 ```yaml
-image: openjdk:11
+image: openjdk:17
 
 pipelines:
   default:
@@ -187,7 +187,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
       - name: Download Lucee Toolbox
         run: wget https://github.com/lucee/lucee-toolbox/releases/latest/download/lucee-toolbox-1.0.0.jar

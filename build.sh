@@ -122,12 +122,18 @@ fi
 
 # Check if build was successful
 if [ $? -eq 0 ]; then
+    # Create dist directory
+    mkdir -p dist
+    
+    # Copy JAR to dist
+    cp target/lucee-toolbox-1.0.0.jar dist/
+    
     echo ""
     echo -e "${GREEN}✅ Build completed successfully!${NC}"
-    echo -e "${GREEN}📋 Executable JAR: target/lucee-toolbox-1.0.0.jar${NC}"
+    echo -e "${GREEN}📋 Executable JAR: dist/lucee-toolbox-1.0.0.jar${NC}"
     echo ""
     echo -e "${BLUE}Quick test:${NC}"
-    echo -e "${BLUE}java -jar target/lucee-toolbox-1.0.0.jar --version${NC}"
+    echo -e "${BLUE}java -jar dist/lucee-toolbox-1.0.0.jar --version${NC}"
     echo ""
 else
     echo -e "${RED}❌ Build failed!${NC}"
@@ -142,7 +148,7 @@ if [ "$NATIVE_IMAGE" = true ]; then
     if ! command -v native-image &> /dev/null; then
         echo -e "${RED}❌ native-image not found!${NC}"
         echo -e "${YELLOW}Please install GraalVM and native-image:${NC}"
-        echo -e "${BLUE}  sdk install java 21.0.1-graal${NC}"
+        echo -e "${BLUE}  sdk install java 17.0.7-graal${NC}"
         echo -e "${BLUE}  gu install native-image${NC}"
         exit 1
     fi
@@ -152,17 +158,17 @@ if [ "$NATIVE_IMAGE" = true ]; then
         --no-fallback \
         --enable-https \
         --report-unsupported-elements-at-runtime \
-        -H:Name=lucee-toolbox \
+        -H:Name=dist/lucee-toolbox \
         -H:+ReportExceptionStackTraces
     
     # Check if native image build was successful
     if [ $? -eq 0 ]; then
         echo ""
         echo -e "${GREEN}✅ Native image created successfully!${NC}"
-        echo -e "${GREEN}📋 Native executable: lucee-toolbox${NC}"
+        echo -e "${GREEN}📋 Native executable: dist/lucee-toolbox${NC}"
         echo ""
         echo -e "${BLUE}Quick test:${NC}"
-        echo -e "${BLUE}./lucee-toolbox --version${NC}"
+        echo -e "${BLUE}./dist/lucee-toolbox --version${NC}"
         echo ""
     else
         echo -e "${RED}❌ Native image build failed!${NC}"

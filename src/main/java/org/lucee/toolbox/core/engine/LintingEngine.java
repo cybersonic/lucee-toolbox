@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 /**
  * Main linting engine for analyzing CFML code and finding violations
@@ -106,7 +105,7 @@ public class LintingEngine {
                     .filter(Files::isRegularFile)
                     .filter(path -> matchesIncludePatterns(path, includePatterns, configBaseDir))
                     .filter(path -> !matchesExcludePatterns(path, excludePatterns, configBaseDir))
-                    .collect(Collectors.toList());
+                    .toList();
             
             if (!quiet && verbose) {
                 logger.info("Found {} CFML files to analyze", cfmlFiles.size());
@@ -138,7 +137,7 @@ public class LintingEngine {
                         return errorResult;
                     }
                 }, executorService))
-                .collect(Collectors.toList());
+                .toList();
         
         // Collect results
         for (CompletableFuture<ToolboxResult> future : futures) {
@@ -339,7 +338,7 @@ public class LintingEngine {
                         violation.getSuggestedFix()
                     );
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
     
     /**

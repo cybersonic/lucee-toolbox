@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -99,7 +98,7 @@ public class FormattingEngine {
                     .filter(Files::isRegularFile)
                     .filter(path -> matchesIncludePatterns(path, includePatterns, configBaseDir))
                     .filter(path -> !matchesExcludePatterns(path, excludePatterns, configBaseDir))
-                    .collect(Collectors.toList());
+                    .toList();
             
             if (!quiet && verbose) {
                 logger.info("Found {} CFML files to format", cfmlFiles.size());
@@ -135,7 +134,7 @@ public class FormattingEngine {
                         return errorResult;
                     }
                 }, executorService))
-                .collect(Collectors.toList());
+                .toList();
         
         // Collect results
         for (CompletableFuture<ToolboxResult> future : futures) {

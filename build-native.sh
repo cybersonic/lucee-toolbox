@@ -19,7 +19,7 @@ echo -e "${BLUE}====================================${NC}"
 if ! command -v native-image &> /dev/null; then
     echo -e "${RED}❌ native-image not found!${NC}"
     echo -e "${YELLOW}Please install GraalVM and native-image:${NC}"
-    echo -e "${BLUE}  sdk install java 21.0.1-graal${NC}"
+    echo -e "${BLUE}  sdk install java 17.0.7-graal${NC}"
     echo -e "${BLUE}  gu install native-image${NC}"
     exit 1
 fi
@@ -59,6 +59,9 @@ esac
 
 echo -e "${YELLOW}🎯 Building for platform: ${PLATFORM}-${ARCH}${NC}"
 
+# Create dist directory
+mkdir -p dist
+
 # Build native executable
 EXECUTABLE_NAME="lucee-toolbox-${PLATFORM}-${ARCH}${EXECUTABLE_SUFFIX}"
 
@@ -67,30 +70,30 @@ echo -e "${YELLOW}📋 Using JAR: ${JAR_NAME}${NC}"
 
 native-image \
     -jar target/${JAR_NAME} \
-    -o "${EXECUTABLE_NAME}"
+    -o "dist/${EXECUTABLE_NAME}"
 
 # Check if build was successful
 if [ $? -eq 0 ]; then
     echo ""
     echo -e "${GREEN}✅ Native executable created successfully!${NC}"
-    echo -e "${GREEN}📋 Executable: ${EXECUTABLE_NAME}${NC}"
+    echo -e "${GREEN}📋 Executable: dist/${EXECUTABLE_NAME}${NC}"
     echo ""
     
     # Test the executable
     echo -e "${YELLOW}🧪 Testing native executable...${NC}"
-    ./${EXECUTABLE_NAME} --version
+    ./dist/${EXECUTABLE_NAME} --version
     
     echo ""
     echo -e "${BLUE}Usage:${NC}"
-    echo -e "${BLUE}  ./${EXECUTABLE_NAME} -i src/${NC}"
+    echo -e "${BLUE}  ./dist/${EXECUTABLE_NAME} -i src/${NC}"
     echo ""
     
     # Create a generic symlink for convenience
-    if [ -f "lucee-toolbox${EXECUTABLE_SUFFIX}" ]; then
-        rm "lucee-toolbox${EXECUTABLE_SUFFIX}"
+    if [ -f "dist/lucee-toolbox${EXECUTABLE_SUFFIX}" ]; then
+        rm "dist/lucee-toolbox${EXECUTABLE_SUFFIX}"
     fi
-    ln -s "${EXECUTABLE_NAME}" "lucee-toolbox${EXECUTABLE_SUFFIX}"
-    echo -e "${GREEN}📋 Generic symlink created: lucee-toolbox${EXECUTABLE_SUFFIX}${NC}"
+    cd dist && ln -s "${EXECUTABLE_NAME}" "lucee-toolbox${EXECUTABLE_SUFFIX}" && cd ..
+    echo -e "${GREEN}📋 Generic symlink created: dist/lucee-toolbox${EXECUTABLE_SUFFIX}${NC}"
     echo ""
 else
     echo -e "${RED}❌ Native executable build failed!${NC}"

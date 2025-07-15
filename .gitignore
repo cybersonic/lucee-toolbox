@@ -3,3 +3,7 @@ performance_analysis.txt
 target/
 lucee-toolbox
 output.txt
+dist/
+
+# Native executables
+lucee-toolbox-*

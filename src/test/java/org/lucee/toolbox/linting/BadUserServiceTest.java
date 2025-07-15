@@ -48,7 +48,8 @@ public class BadUserServiceTest {
             configManager,
             false, // verbose
             true,  // quiet
-            false  // performance mode
+            false, // performance mode
+            false  // dry run
         );
     }
     

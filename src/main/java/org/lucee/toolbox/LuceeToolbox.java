@@ -8,6 +8,7 @@ import org.lucee.toolbox.core.model.ToolboxResult;
 import org.lucee.toolbox.output.OutputFormatFactory;
 import org.lucee.toolbox.output.OutputFormatter;
 import org.lucee.toolbox.repl.CFMLRepl;
+import org.lucee.toolbox.repl.EnhancedCFMLRepl;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +78,11 @@ public class LuceeToolbox {
                 return;
             }
             
+            if ("enhanced-repl".equalsIgnoreCase(mode) || "lucee-repl".equalsIgnoreCase(mode)) {
+                EnhancedCFMLRepl.main(new String[]{});
+                return;
+            }
+            
             // Handle stdin input
             String inputPath = cmd.getOptionValue("input");
             if (inputPath == null) {
@@ -122,6 +128,7 @@ public class LuceeToolbox {
             String parser = cmd.getOptionValue("parser", "auto");
             boolean performanceMode = cmd.hasOption("performance");
             boolean ignoreViolations = cmd.hasOption("ignore-violations") || cmd.hasOption("no-exit-error");
+            boolean dryRun = cmd.hasOption("dry-run");
             
             // Configure logging levels based on flags BEFORE loading config
             configureLogging(verbose, quiet);
@@ -143,7 +150,7 @@ public class LuceeToolbox {
             LuceeToolbox toolbox = new LuceeToolbox();
             ToolboxResult result = toolbox.execute(
                 inputPath, mode, parser, outputFormat, outputFile, 
-                configManager, verbose, quiet, performanceMode
+                configManager, verbose, quiet, performanceMode, dryRun
             );
             
             // Output results
@@ -187,7 +194,7 @@ public class LuceeToolbox {
     public ToolboxResult execute(String inputPath, String mode, String parser, 
                                String outputFormat, String outputFile,
                                ConfigurationManager configManager, 
-                               boolean verbose, boolean quiet, boolean performanceMode) 
+                               boolean verbose, boolean quiet, boolean performanceMode, boolean dryRun) 
                                throws IOException {
         
         Path input = Paths.get(inputPath);
@@ -205,12 +212,12 @@ public class LuceeToolbox {
                 return executeLinting(input, parser, configManager, verbose, quiet, performanceMode, singleFileMode);
             
             case "format":
-                return executeFormatting(input, parser, configManager, verbose, quiet, performanceMode, singleFileMode);
+                return executeFormatting(input, parser, configManager, verbose, quiet, performanceMode, singleFileMode, dryRun);
             
             case "both":
                 // Execute both linting and formatting
                 ToolboxResult lintResult = executeLinting(input, parser, configManager, verbose, quiet, performanceMode, singleFileMode);
-                ToolboxResult formatResult = executeFormatting(input, parser, configManager, verbose, quiet, performanceMode, singleFileMode);
+                ToolboxResult formatResult = executeFormatting(input, parser, configManager, verbose, quiet, performanceMode, singleFileMode, dryRun);
                 
                 // Merge results
                 result = lintResult;
@@ -239,11 +246,20 @@ public class LuceeToolbox {
     private ToolboxResult executeFormatting(Path input, String parser,
                                           ConfigurationManager configManager,
                                           boolean verbose, boolean quiet, boolean performanceMode,
-                                          boolean singleFileMode)
+                                          boolean singleFileMode, boolean dryRun)
                                           throws IOException {
         
         FormattingEngine engine = new FormattingEngine(configManager, parser, performanceMode);
-        return engine.format(input, verbose, quiet, singleFileMode);
+        if (dryRun) {
+            // In dry-run mode, create a copy of the result to avoid modifying actual files
+            ToolboxResult dryRunResult = engine.format(input, verbose, quiet, singleFileMode);
+            // Add metadata to indicate this is a dry-run
+            dryRunResult.addMetadata("dryRun", true);
+            dryRunResult.addMetadata("message", "Dry-run mode: No files were actually modified");
+            return dryRunResult;
+        } else {
+            return engine.format(input, verbose, quiet, singleFileMode);
+        }
     }
     
     private void writeToFile(String content, String outputFile, String defaultExtension) throws IOException {

@@ -3,6 +3,7 @@ package org.lucee.toolbox.core.parser;
 import org.lucee.toolbox.core.config.ConfigurationManager;
 import org.lucee.toolbox.core.parser.impl.RegexParser;
 import org.lucee.toolbox.core.parser.impl.BoxLangParser;
+import org.lucee.toolbox.core.parser.impl.LuceeScriptEngineParser;
 
 /**
  * Factory for creating CFML parsers
@@ -17,7 +18,7 @@ public class ParserFactory {
     
     /**
      * Create a parser of the specified type
-     * @param parserType The type of parser (boxlang, lucee, regex)
+     * @param parserType The type of parser (boxlang, lucee, lucee-script, regex)
      * @return CfmlParser instance or null if type not supported
      */
     public CfmlParser createParser(String parserType) {
@@ -25,7 +26,9 @@ public class ParserFactory {
             case "boxlang":
                 return createBoxLangParser();
             case "lucee":
-                return createLuceeParser();
+            case "lucee-script":
+            case "lucee-scriptengine":
+                return createLuceeScriptEngineParser();
             case "regex":
                 return new RegexParser();
             default:
@@ -41,13 +44,9 @@ public class ParserFactory {
     }
     
     /**
-     * Create Lucee native parser (placeholder)
+     * Create Lucee ScriptEngine parser
      */
-    private CfmlParser createLuceeParser() {
-        // For now, fall back to regex parser
-        // Log that we're falling back to regex parser
-        System.out.println("Lucee native parser not yet implemented, falling back to RegexParser");
-        // TODO: Implement Lucee native parser integration
-        return new RegexParser();
+    private CfmlParser createLuceeScriptEngineParser() {
+        return new LuceeScriptEngineParser();
     }
 }

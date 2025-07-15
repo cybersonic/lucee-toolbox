@@ -61,37 +61,42 @@ jobs:
         echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
         echo "JAR_NAME=lucee-toolbox-$VERSION.jar" >> $GITHUB_ENV
 
+    - name: Create dist directory
+      run: |
+        mkdir -p dist
+
     - name: Build Native Binary (Unix)
       if: matrix.os != 'windows-latest'
       run: |
         native-image \
           -jar target/${{ env.JAR_NAME }} \
-          -o ${{ matrix.executable }}
+          -o dist/${{ matrix.executable }}
 
     - name: Build Native Binary (Windows)
       if: matrix.os == 'windows-latest'
       run: |
+        mkdir -p dist
         native-image `
           -jar target/${{ env.JAR_NAME }} `
-          -o ${{ matrix.executable }}
+          -o dist/${{ matrix.executable }}
 
     - name: Test Native Binary (Unix)
       if: matrix.os != 'windows-latest'
       run: |
-        ./${{ matrix.executable }} --version
-        echo 'dump(server);' | ./${{ matrix.executable }} --ignore-violations || true
+        ./dist/${{ matrix.executable }} --version
+        echo 'dump(server);' | ./dist/${{ matrix.executable }} --ignore-violations || true
 
     - name: Test Native Binary (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        .\${{ matrix.executable }} --version
-        echo 'dump(server);' | .\${{ matrix.executable }} --ignore-violations - || echo "Windows stdin test completed"
+        .\dist\${{ matrix.executable }} --version
+        echo 'dump(server);' | .\dist\${{ matrix.executable }} --ignore-violations - || echo "Windows stdin test completed"
 
     - name: Upload Binary
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.executable }}
-        path: ${{ matrix.executable }}
+        path: dist/${{ matrix.executable }}
 
   create-release:
     name: Create Release
