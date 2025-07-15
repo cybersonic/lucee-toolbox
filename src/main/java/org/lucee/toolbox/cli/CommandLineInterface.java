@@ -224,7 +224,7 @@ public class CommandLineInterface {
                        "  lucee-toolbox -i src/ --show-config     # Show resolved configuration\n" +
                        "  echo 'dump(server);' | lucee-toolbox    # Lint CFML code from stdin\n" +
                        "  cat myfile.cfc | lucee-toolbox -m format # Format CFML code from stdin\n\n" +
-                       "For more information: https://github.com/lucee/lucee-toolbox\n";
+                       "For more information: https://github.com/cybersonic/lucee-toolbox\n";
         
         formatter.printHelp("lucee-toolbox", header, options, footer, true);
     }

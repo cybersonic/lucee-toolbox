@@ -278,7 +278,7 @@ public class LuceeToolbox {
     private static void printVersion() {
         System.out.println("Lucee Toolbox v" + VERSION);
         System.out.println("Advanced CFML Linter and Formatter");
-        System.out.println("https://github.com/lucee/lucee-toolbox");
+        System.out.println("https://github.com/cybersonic/lucee-toolbox");
     }
     
     private static void printAvailableFormats() {

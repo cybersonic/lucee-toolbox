@@ -37,16 +37,16 @@
     </repositories>
 
     <dependencies>
-        <!-- JSON processing -->
+        <!-- JSON processing - minimal -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         
         <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-csv</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         
@@ -57,18 +57,20 @@
             <version>1.5.0</version>
         </dependency>
         
-        <!-- BoxLang Parser -->
+        <!-- BoxLang Parser - optional for full parsing support -->
         <dependency>
             <groupId>io.boxlang</groupId>
             <artifactId>boxlang</artifactId>
             <version>${boxlang.version}</version>
+            <optional>true</optional>
         </dependency>
         
-        <!-- Lucee Core for REPL -->
+        <!-- Lucee Core for REPL - optional for REPL support -->
         <dependency>
             <groupId>org.lucee</groupId>
             <artifactId>lucee</artifactId>
             <version>${lucee.version}</version>
+            <optional>true</optional>
         </dependency>
         
         <!-- Servlet API for Lucee CLI -->
@@ -86,38 +88,40 @@
             <version>4.13.1</version>
         </dependency>
         
-        <!-- HTTP client for documentation integration -->
+        <!-- HTTP client for documentation integration - optional -->
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
             <version>5.2.1</version>
+            <optional>true</optional>
         </dependency>
         
-        <!-- HTML parsing for documentation -->
+        <!-- HTML parsing for documentation - optional -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.16.1</version>
+            <optional>true</optional>
         </dependency>
         
-        <!-- Performance optimizations -->
+        <!-- Performance optimizations - optional -->
         <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
             <version>8.5.12</version>
+            <optional>true</optional>
         </dependency>
         
-        <!-- Logging -->
+        <!-- Logging - minimal -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.7</version>
+            <version>1.7.36</version>
         </dependency>
-        
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.4.8</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.36</version>
         </dependency>
         
         <!-- Testing -->
@@ -135,6 +139,113 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>minimal</id>
+            <activation>
+                <property>
+                    <name>minimal</name>
+                </property>
+            </activation>
+            <properties>
+                <skipLuceeCore>true</skipLuceeCore>
+                <skipBoxLang>true</skipBoxLang>
+                <skipReplFeatures>true</skipReplFeatures>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                                    <transformers>
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>org.lucee.toolbox.LuceeToolbox</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                    <filters>
+                                        <filter>
+                                            <artifact>*:*</artifact>
+                                            <excludes>
+                                                <exclude>META-INF/*.SF</exclude>
+                                                <exclude>META-INF/*.DSA</exclude>
+                                                <exclude>META-INF/*.RSA</exclude>
+                                            </excludes>
+                                        </filter>
+                                        <!-- Exclude heavy dependencies -->
+                                        <filter>
+                                            <artifact>io.boxlang:boxlang</artifact>
+                                            <excludes>
+                                                <exclude>**</exclude>
+                                            </excludes>
+                                        </filter>
+                                        <filter>
+                                            <artifact>org.lucee:lucee</artifact>
+                                            <excludes>
+                                                <exclude>**</exclude>
+                                            </excludes>
+                                        </filter>
+                                        <filter>
+                                            <artifact>it.unimi.dsi:fastutil</artifact>
+                                            <excludes>
+                                                <exclude>**</exclude>
+                                            </excludes>
+                                        </filter>
+                                        <filter>
+                                            <artifact>org.apache.httpcomponents.client5:httpclient5</artifact>
+                                            <excludes>
+                                                <exclude>**</exclude>
+                                            </excludes>
+                                        </filter>
+                                        <filter>
+                                            <artifact>org.jsoup:jsoup</artifact>
+                                            <excludes>
+                                                <exclude>**</exclude>
+                                            </excludes>
+                                        </filter>
+                                        <filter>
+                                            <artifact>ch.qos.logback:logback-classic</artifact>
+                                            <excludes>
+                                                <exclude>**</exclude>
+                                            </excludes>
+                                        </filter>
+                                        <filter>
+                                            <artifact>com.fasterxml.jackson.dataformat:jackson-dataformat-csv</artifact>
+                                            <excludes>
+                                                <exclude>**</exclude>
+                                            </excludes>
+                                        </filter>
+                                        <filter>
+                                            <artifact>com.fasterxml.jackson.core:jackson-databind</artifact>
+                                            <excludes>
+                                                <exclude>**</exclude>
+                                            </excludes>
+                                        </filter>
+                                    </filters>
+                                    <relocations>
+                                        <!-- Avoid conflicts with minimal dependencies -->
+                                        <relocation>
+                                            <pattern>com.fasterxml.jackson</pattern>
+                                            <shadedPattern>org.lucee.toolbox.shaded.jackson</shadedPattern>
+                                        </relocation>
+                                    </relocations>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -167,9 +278,25 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>false</minimizeJar>
+                            <finalName>lucee-toolbox-${project.version}</finalName>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>org.lucee.toolbox.LuceeToolbox</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>META-INF/*.DSA</resource>
+                                    <resource>META-INF/*.RSA</resource>
+                                    <resource>META-INF/*.SF</resource>
                                 </transformer>
                             </transformers>
                             <filters>
@@ -179,6 +306,31 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>**/module-info.class</exclude>
+                                        <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                                <!-- Exclude duplicate dependencies from boxlang -->
+                                <filter>
+                                    <artifact>io.boxlang:boxlang</artifact>
+                                    <excludes>
+                                        <exclude>com/fasterxml/jackson/**</exclude>
+                                        <exclude>org/apache/commons/**</exclude>
+                                        <exclude>org/antlr/**</exclude>
+                                        <exclude>org/objectweb/asm/**</exclude>
+                                        <exclude>org/slf4j/**</exclude>
+                                        <exclude>META-INF/services/**</exclude>
+                                        <exclude>META-INF/maven/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <!-- Exclude Lucee extensions to reduce size -->
+                                <filter>
+                                    <artifact>org.lucee:lucee</artifact>
+                                    <excludes>
+                                        <exclude>extensions/**</exclude>
+                                        <exclude>bundles/**</exclude>
+                                        <exclude>context/**</exclude>
+                                        <exclude>core/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
