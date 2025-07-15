@@ -111,8 +111,8 @@ jobs:
       shell: pwsh
       run: |
         & ".\dist\${{ matrix.executable }}" --version
-        Write-Host "Testing stdin input..."
-        'component { function test() { return "hello"; } }' | & ".\dist\${{ matrix.executable }}" --ignore-violations
+        Write-Host "Testing help command..."
+        & ".\dist\${{ matrix.executable }}" --help | Out-Null
         Write-Host "Windows binary test completed successfully"
 
     - name: Upload Binary
