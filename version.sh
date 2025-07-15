@@ -37,10 +37,9 @@ sed -i.bak "s/$CURRENT_VERSION/$NEW_VERSION/g" src/main/java/org/lucee/toolbox/L
 sed -i.bak "s/$CURRENT_VERSION/$NEW_VERSION/g" src/main/java/org/lucee/toolbox/repl/CFMLRepl.java && rm src/main/java/org/lucee/toolbox/repl/CFMLRepl.java.bak
 sed -i.bak "s/$CURRENT_VERSION/$NEW_VERSION/g" src/main/java/org/lucee/toolbox/cli/CommandLineInterface.java && rm src/main/java/org/lucee/toolbox/cli/CommandLineInterface.java.bak
 sed -i.bak "s/$CURRENT_VERSION/$NEW_VERSION/g" build.sh && rm build.sh.bak
-sed -i.bak "s/$CURRENT_VERSION/$NEW_VERSION/g" build-native.sh && rm build-native.sh.bak
 sed -i.bak "s/$CURRENT_VERSION/$NEW_VERSION/g" cfml-repl.sh && rm cfml-repl.sh.bak
 
-# Note: build-windows.cmd now reads version dynamically from pom.xml
+# Note: build-native.sh and build-windows.cmd now read version dynamically from pom.xml
 
 echo "✅ Version updated successfully!"
 echo ""

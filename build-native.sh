@@ -24,8 +24,12 @@ if ! command -v native-image &> /dev/null; then
     exit 1
 fi
 
+# Get version from pom.xml
+PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+JAR_NAME="lucee-toolbox-${PROJECT_VERSION}.jar"
+
 # Ensure JAR is built
-if [ ! -f "target/lucee-toolbox-1.0.0.jar" ]; then
+if [ ! -f "target/${JAR_NAME}" ]; then
     echo -e "${YELLOW}📦 Building JAR first...${NC}"
     ./build.sh
 fi
@@ -59,9 +63,10 @@ echo -e "${YELLOW}🎯 Building for platform: ${PLATFORM}-${ARCH}${NC}"
 EXECUTABLE_NAME="lucee-toolbox-${PLATFORM}-${ARCH}${EXECUTABLE_SUFFIX}"
 
 echo -e "${YELLOW}🔨 Creating native executable: ${EXECUTABLE_NAME}${NC}"
+echo -e "${YELLOW}📋 Using JAR: ${JAR_NAME}${NC}"
 
 native-image \
-    -jar target/lucee-toolbox-1.0.0.jar \
+    -jar target/${JAR_NAME} \
     -o "${EXECUTABLE_NAME}"
 
 # Check if build was successful
